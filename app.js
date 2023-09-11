@@ -5,6 +5,7 @@ const playerFactory = (name, mark) => {
 
     return{getMark, getName}
 }
+<<<<<<< HEAD
 
 const gameBoard = (() => {
     const fieldFactory = (i) => {
@@ -134,6 +135,119 @@ const gameFlow = (() => {
         }
     }
 
+=======
+
+const gameBoard = (() => {
+    const fieldFactory = (i) => {
+        let marker = "";
+        let occupied = false;
+        let number = i;
+
+        const getMarker = () => {return marker;}
+        const setMarker = (mark) => {marker = mark};
+        const getOccupied = () => {return occupied;}
+        const setOccupied = () => {occupied = true;}
+        const getNumber = () => {return number;}
+
+        return {getMarker, setMarker, getOccupied, setOccupied, getNumber}
+    }
+
+    let fields = [];
+    for (let index = 0; index < 9; index++) {
+        fields.push(fieldFactory(index))
+    }
+    const renderGB = () => {
+        const gameSpace = document.querySelector('#gameSpace')
+        while(gameSpace.firstChild) {
+            gameSpace.removeChild(gameSpace.firstChild)
+        }
+        let rowDiv
+        for (let i = 0; i  < 9; i++) {
+            if(i % 3 == 0) {
+                rowDiv = document.createElement("div")
+                rowDiv.className = "row"
+                gameSpace.appendChild(rowDiv)
+            }
+            const fieldDiv = document.createElement("div")
+            fieldDiv.classList.add("field")
+            console.log(fields[i].getNumber())
+            fieldDiv.id = fields[i].getNumber()
+            fieldDiv.textContent = fields[i].getMarker()
+
+            rowDiv.appendChild(fieldDiv)
+        }
+    }
+
+    return {renderGB, fields};
+})()
+
+gameBoard.renderGB()
+
+const gameFlow = (() => {
+    let playerOne
+    let playerTwo
+    let currentPlayer
+
+    const newGameBtn = document.querySelector("#newGame")
+    newGameBtn.addEventListener("click", () => {
+        const playerDialog = document.querySelector("#playerDialog")
+        playerDialog.show()
+
+        })
+        const startGameBtn = document.querySelector("#startGame")
+        startGameBtn.addEventListener("click", (e) => {
+            e.preventDefault()
+            playerOne = playerFactory(document.querySelector("#playerOne").value, 'X')
+            playerTwo = playerFactory(document.querySelector("#playerTwo").value, 'O')
+            //console.log(playerOne.getName())
+            currentPlayer = playerOne
+            playerDialog.close()
+    })
+
+    const checkRows = () => {
+        if (gameBoard.fields[0].getMarker() != "" && gameBoard.fields[0].getMarker() == gameBoard.fields[1].getMarker() && gameBoard.fields[1].getMarker() == gameBoard.fields[2].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[3].getMarker() != "" && gameBoard.fields[3].getMarker() == gameBoard.fields[4].getMarker() && gameBoard.fields[4].getMarker() == gameBoard.fields[5].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[6].getMarker() != "" && gameBoard.fields[6].getMarker() == gameBoard.fields[7].getMarker() && gameBoard.fields[7].getMarker() == gameBoard.fields[8].getMarker()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    const checkCols = () => {
+        if (gameBoard.fields[0].getMarker() != "" && gameBoard.fields[0].getMarker() == gameBoard.fields[3].getMarker() && gameBoard.fields[3].getMarker() == gameBoard.fields[6].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[1].getMarker() != "" && gameBoard.fields[1].getMarker() == gameBoard.fields[4].getMarker() && gameBoard.fields[4].getMarker() == gameBoard.fields[7].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[2].getMarker() != "" && gameBoard.fields[2].getMarker() == gameBoard.fields[5].getMarker() && gameBoard.fields[5].getMarker() == gameBoard.fields[8].getMarker()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    const checkDia = () => {
+        if (gameBoard.fields[0].getMarker() != "" && gameBoard.fields[0].getMarker() == gameBoard.fields[4].getMarker() && gameBoard.fields[4].getMarker() == gameBoard.fields[8].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[2].getMarker() != "" && gameBoard.fields[2].getMarker() == gameBoard.fields[4].getMarker() && gameBoard.fields[4].getMarker() == gameBoard.fields[6].getMarker()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    const winner = () => {
+        if (checkRows() || checkCols() || checkDia()) {
+            const winnerDialog = document.querySelector('#winnerDialog')
+            winnerDialog.textContent = "Glückwunsch du hast gewonnen, " + currentPlayer.getName() + "!"
+            winnerDialog.show()
+        }
+    }
+
+    console.log("Test")
+>>>>>>> 35bae8f35eef134b70a645c20c56396db3085b6e
     const attachFields = () => {
     fieldsDiv = document.querySelectorAll('div.field')
     //console.log(fieldsDiv)
