@@ -1,141 +1,161 @@
-let currentPlayer
 const playerFactory = (name, mark) => {
-    this.name = name
-    this.mark = mark
     
-    const getName = () => name;
-    const getMark = () => mark;
+    const getName = () => {return name;}
+    const getMark = () => {return mark;}
 
-    return {getName, getMark}
-
-}
-const fieldFactory = () => {
-    let occupied = false
-    let mark = ''
-    let button = document.createElement('button')
-    
-    const getOccupied= () => {
-        return occupied;
-    }
-    const getMark = () => {
-        return mark;
-    }
-    const setOccupied = () => {
-        occupied = true;
-    }
-    const setMark = (marker) => {
-        mark = marker;
-        button.textContent = mark;
-    }
-
-    button.textContent = mark
-    button.id = 'field-button'
-    button.addEventListener('click', () => {
-        setMark(currentPlayer.getMark());
-    })
-
-    return {getOccupied, getMark, setOccupied, setMark, button}
+    return{getMark, getName}
 }
 
-//create empty gameboard + winner function to determine if winner constellation is given
 const gameBoard = (() => {
-    const rowOne = [fieldFactory(), fieldFactory(), fieldFactory()]
-    const rowTwo = [fieldFactory(), fieldFactory(), fieldFactory()]
-    const rowThree = [fieldFactory(), fieldFactory(), fieldFactory()]
+    const fieldFactory = (i) => {
+        let marker = "";
+        let occupied = false;
+        let number = i;
 
-    const winner = () => {
-        if(rowOne[0].getMark() != '' && rowOne[0].getMark() == rowOne[1].getMark() && rowOne[0].getMark() == rowOne[2].getMark()) {
-            console.log('A')
-            return true
-        } else if(rowTwo[0].getMark() != '' && rowTwo[0].getMark() == rowTwo[1].getMark() && rowTwo[0].getMark() == rowTwo[2].getMark()) {
-            console.log('B')
-            return true
-        } else if (rowThree[0].getMark() != '' && rowThree[0].getMark() == rowThree[1].getMark() && rowThree[0].getMark() == rowThree[2].getMark()) {
-            console.log('C')
-            return true
-        } else if (rowOne[0].getMark() != '' && rowOne[0].getMark() == rowTwo[0].getMark() && rowOne[0].getMark() == rowThree[0].getMark()) {
-            console.log('D')
-            return true
-        } else if (rowOne[1].getMark() != '' && rowOne[1].getMark() == rowTwo[1].getMark() && rowOne[1].getMark() == rowThree[1].getMark()) {
-            console.log('E')
-            return true
-        } else if (rowOne[2].getMark() != '' && rowOne[2].getMark() == rowTwo[2].getMark() && rowOne[2].getMark() == rowThree[2].getMark()) {
-            console.log('F')
-            return true
-        } else if (rowOne[0].getMark() != '' && rowOne[0].getMark() == rowTwo[1].getMark() && rowOne[0].getMark() == rowThree[2].getMark()) {
-            console.log('G')
-            return true
-        } else if (rowOne[2].getMark() != '' && rowOne[2].getMark() == rowTwo[1].getMark() && rowOne[2].getMark() == rowThree[0].getMark()) {return true}
-        else {
-            return false
+        const getMarker = () => {return marker;}
+        const setMarker = (mark) => {marker = mark};
+        const getOccupied = () => {return occupied;}
+        const setOccupied = () => {occupied = true;}
+        const getNumber = () => {return number;}
+
+        return {getMarker, setMarker, getOccupied, setOccupied, getNumber}
+    }
+
+    let fields = [];
+    for (let index = 0; index < 9; index++) {
+        fields.push(fieldFactory(index))
+    }
+    const renderGB = () => {
+        const gameSpace = document.querySelector('#gameSpace')
+        while(gameSpace.firstChild) {
+            gameSpace.removeChild(gameSpace.firstChild)
+        }
+        let rowDiv
+        for (let i = 0; i  < 9; i++) {
+            if(i % 3 == 0) {
+                rowDiv = document.createElement("div")
+                rowDiv.className = "row"
+                gameSpace.appendChild(rowDiv)
+            }
+            const fieldDiv = document.createElement("div")
+            fieldDiv.classList.add("field")
+            console.log(fields[i].getNumber())
+            fieldDiv.id = fields[i].getNumber()
+            fieldDiv.textContent = fields[i].getMarker()
+
+            rowDiv.appendChild(fieldDiv)
         }
     }
 
+    return {renderGB, fields};
+})()
 
-    return{rowOne,rowTwo,rowThree, winner}
-})();
+gameBoard.renderGB()
 
-
-//renders gameboard
-const renderGB = () => {
-    const gameSpace = document.querySelector('#gameSpace')
-
-    const rowOneDiv = document.createElement('div')
-    rowOneDiv.id = 'row'
-    gameBoard.rowOne.forEach(field => {
-        const fieldDiv = document.createElement('div')
-        fieldDiv.id = 'field'
-        fieldDiv.appendChild(field.button)
-        rowOneDiv.appendChild(fieldDiv)
-    });
-
-    const rowTwoDiv = document.createElement('div')
-    rowTwoDiv.id = 'row'
-    gameBoard.rowTwo.forEach(field => {
-        const fieldDiv = document.createElement('div')
-        fieldDiv.id = 'field'
-        fieldDiv.appendChild(field.button)
-        rowTwoDiv.appendChild(fieldDiv)
-    });
-
-    const rowThreeDiv = document.createElement('div')
-    rowThreeDiv.id = 'row'
-    gameBoard.rowThree.forEach(field => {
-        const fieldDiv = document.createElement('div')
-        fieldDiv.id = 'field'
-        fieldDiv.appendChild(field.button)
-        rowThreeDiv.appendChild(fieldDiv)
-    });
-
-    gameSpace.append(rowOneDiv, rowTwoDiv, rowThreeDiv)
-}
-gameBoard.rowOne[0].setMark('X')
-gameBoard.rowOne[1].setMark('X')
-gameBoard.rowOne[2].setMark('O')
-
-//initiating game + filling out player names
-const initiateGame = (() => {
+const gameFlow = (() => {
     let playerOne
     let playerTwo
-    const newGameBtn = document.querySelector('#newGame')
-    const playerDialog = document.querySelector('#playerDialog')
+    let currentPlayer
 
-    newGameBtn.addEventListener('click', () => {
-        playerDialog.showModal();
+    const newGameBtn = document.querySelector("#newGame")
+    newGameBtn.addEventListener("click", () => {
+        const playerDialog = document.querySelector("#playerDialog")
+        playerDialog.show()
+
+        })
+        const startGameBtn = document.querySelector("#startGame")
+        startGameBtn.addEventListener("click", (e) => {
+            e.preventDefault()
+            playerOne = playerFactory(document.querySelector("#playerOne").value, 'X')
+            playerTwo = playerFactory(document.querySelector("#playerTwo").value, 'O')
+            //console.log(playerOne.getName())
+            currentPlayer = playerOne
+            playerDialog.close()
     })
 
-    const startGameBtn = document.querySelector('#startGame')
-    startGameBtn.addEventListener ('click', (e) => {
-        e.preventDefault()
-        console.log('yes')
-        playerOne = playerFactory(document.querySelector('#playerOne').value, 'X')
-        playerTwo = playerFactory(document.querySelector('#playerTwo').value, 'O')
-        playerDialog.close()
-    })
-    
+    const checkRows = () => {
+        if (gameBoard.fields[0].getMarker() != "" && gameBoard.fields[0].getMarker() == gameBoard.fields[1].getMarker() && gameBoard.fields[1].getMarker() == gameBoard.fields[2].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[3].getMarker() != "" && gameBoard.fields[3].getMarker() == gameBoard.fields[4].getMarker() && gameBoard.fields[4].getMarker() == gameBoard.fields[5].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[6].getMarker() != "" && gameBoard.fields[6].getMarker() == gameBoard.fields[7].getMarker() && gameBoard.fields[7].getMarker() == gameBoard.fields[8].getMarker()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-    currentPlayer = playerOne;
-    renderGB()
+    const checkCols = () => {
+        if (gameBoard.fields[0].getMarker() != "" && gameBoard.fields[0].getMarker() == gameBoard.fields[3].getMarker() && gameBoard.fields[3].getMarker() == gameBoard.fields[6].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[1].getMarker() != "" && gameBoard.fields[1].getMarker() == gameBoard.fields[4].getMarker() && gameBoard.fields[4].getMarker() == gameBoard.fields[7].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[2].getMarker() != "" && gameBoard.fields[2].getMarker() == gameBoard.fields[5].getMarker() && gameBoard.fields[5].getMarker() == gameBoard.fields[8].getMarker()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-})();
+    const checkDia = () => {
+        if (gameBoard.fields[0].getMarker() != "" && gameBoard.fields[0].getMarker() == gameBoard.fields[4].getMarker() && gameBoard.fields[4].getMarker() == gameBoard.fields[8].getMarker()) {
+            return true;
+        } else if (gameBoard.fields[2].getMarker() != "" && gameBoard.fields[2].getMarker() == gameBoard.fields[4].getMarker() && gameBoard.fields[4].getMarker() == gameBoard.fields[6].getMarker()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    const winner = () => {
+        if (checkRows() || checkCols() || checkDia()) {
+            const winnerDialog = document.querySelector('#winnerDialog')
+            winnerDialog.textContent = "Glückwunsch du hast gewonnen, " + currentPlayer.getName() + "!"
+            winnerDialog.show()
+        }
+    }
+
+    console.log("Test")
+    const attachFields = () => {
+    fieldsDiv = document.querySelectorAll('div.field')
+    //console.log(fieldsDiv)
+    fieldsDiv.forEach(field => {
+       const button = document.createElement("button")
+       button.id = "field-button"
+       button.addEventListener("click", () => {
+        if(gameBoard.fields[field.id].getOccupied() == false) {
+
+            gameBoard.fields[field.id].setMarker(currentPlayer.getMark())
+            gameBoard.fields[field.id].setOccupied()
+            gameBoard.renderGB()
+            winner();
+            attachFields();
+            if(currentPlayer == playerOne) {
+                currentPlayer = playerTwo
+            } else {
+                currentPlayer = playerOne
+            }
+        }
+       })
+       field.appendChild(button)
+        })
+    }
+    /* gameBoard.fields.forEach(field => {
+        const button = document.createElement("button")
+       button.id = "field-button"
+       button.addEventListener("click", () => {
+        if(field.textContent == "") {
+            field.textContent = currentPlayer.getMark()
+            if(currentPlayer == playerOne) {
+                currentPlayer = playerTwo
+            } else {
+                currentPlayer = playerOne
+            }
+        }
+       })
+        field.appendChild(button)
+    }) */
+    attachFields()
+    })();
+
+//console.log(gameBoard.fields)
