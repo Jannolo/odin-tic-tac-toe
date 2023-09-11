@@ -39,7 +39,6 @@ const gameBoard = (() => {
             }
             const fieldDiv = document.createElement("div")
             fieldDiv.classList.add("field")
-            console.log(fields[i].getNumber())
             fieldDiv.id = fields[i].getNumber()
             fieldDiv.textContent = fields[i].getMarker()
 
@@ -107,15 +106,34 @@ const gameFlow = (() => {
         }
     }
 
+    const draw = () => {
+      for (let index = 0; index < 9; index++) {
+        if(!gameBoard.fields[index].getOccupied()) {
+            return false;
+        }
+
+      }
+      return true;
+    }
+
     const winner = () => {
+        const winnerDialog = document.querySelector('#winnerDialog')
         if (checkRows() || checkCols() || checkDia()) {
-            const winnerDialog = document.querySelector('#winnerDialog')
+
+            const closeBtn = document.createElement("button")
+            closeBtn.textContent = "X"
+            closeBtn.addEventListener("click", () => {
+                winnerDialog.close()
+            })
+            winnerDialog.appendChild(closeBtn)
             winnerDialog.textContent = "Glückwunsch du hast gewonnen, " + currentPlayer.getName() + "!"
+            winnerDialog.show()
+        } else if (draw()) {
+            winnerDialog.textContent = "Es ist ein Unentschieden!"
             winnerDialog.show()
         }
     }
 
-    console.log("Test")
     const attachFields = () => {
     fieldsDiv = document.querySelectorAll('div.field')
     //console.log(fieldsDiv)
